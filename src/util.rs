@@ -114,16 +114,17 @@ pub fn read_button_states(kind: &Kind, states: &Vec<u8>) -> Vec<bool> {
     }
 
     match kind {
-        Kind::Akp153 => {
+        Kind::Akp153 | Kind::Akp153V2 | Kind::Akp153e => {
             let mut bools = vec![];
 
             for i in 0..kind.key_count() {
                 bools.push(states[(i + 1) as usize] != 0);
             }
+        
 
             bools
         }
-
+        
         Kind::Original => {
             let mut bools = vec![];
 

@@ -159,7 +159,7 @@ impl AsyncStreamDeck {
         let device = self.device.clone();
         let lock = device.lock().await;
         match self.kind {
-            Kind::Akp153 => Ok(block_in_place(move || lock.clear_button_image(key))?),
+            Kind::Akp153 | Kind::Akp153V2 | Kind::Akp153e => Ok(block_in_place(move || lock.clear_button_image(key))?),
             _ => Ok(block_in_place(move || lock.write_image(key, &image))?),
         }
     }
@@ -207,12 +207,12 @@ impl AsyncDeviceStateReader {
             StreamDeckInput::ButtonStateChange(buttons) => {
                 for (index, (their, mine)) in zip(buttons.iter(), my_states.buttons.iter()).enumerate() {
                     match self.device.kind {
-                        Kind::Akp153 => {
+                        Kind::Akp153 | Kind::Akp153V2 | Kind::Akp153e => {
                             if *their {
                                 updates.push(DeviceStateUpdate::ButtonDown(index as u8));
                                 updates.push(DeviceStateUpdate::ButtonUp(index as u8));
                             }
-                        }
+                        },
                         _ => {
                             if *their != *mine {
                                 if index < self.device.kind.key_count() as usize {
